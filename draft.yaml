@@ -1,0 +1,82 @@
+models:
+ User:
+    phone_number: string:20 unique
+    first_name: string:100 nullable
+    last_name: string:100 nullable
+    profile_image: string:255 nullable
+    location: text nullable
+    role: enum:user,admin default:user
+    relationships:
+      hasMany: Order, Favorite, Notification
+      hasOne: Cart
+    softDeletes: true
+
+  Store:
+    name: string:100
+    location: text nullable
+    description: text nullable
+    status: boolean default:true
+    category: enum:clothing,electronics,grocery,restaurant,beauty,furniture
+    relationships:
+      hasMany: Product
+    softDeletes: true
+
+  Product:
+    store_id: id foreign
+    name: string:100
+    description: text nullable
+    price: decimal:10,2
+    quantity: integer
+    image: string:255 nullable
+    category: enum:clothes,electronics,food,cosmetics,furniture,accessories
+    relationships:
+      belongsTo: Store
+      hasMany: OrderItem, CartItem, Favorite
+    softDeletes: true
+
+  Order:
+    user_id: id foreign
+    total_amount: decimal:10,2
+    status: enum:pending,accepted,delivering,delivered,cancelled default:pending
+    delivery_location: text
+    payment_info: json
+    relationships:
+      belongsTo: User
+      hasMany: OrderItem, Notification
+    softDeletes: true
+
+  OrderItem:
+    order_id: id foreign
+    product_id: id foreign
+    quantity: integer
+    price_at_time: decimal:10,2
+    relationships:
+      belongsTo: Order, Product
+
+  Cart:
+    user_id: id foreign:users
+    relationships:
+      belongsTo: User
+      hasMany: CartItem
+
+  CartItem:
+    cart_id: id foreign
+    product_id: id foreign
+    quantity: integer
+    relationships:
+      belongsTo: Cart, Product
+
+  Favorite:
+    user_id: id foreign
+    product_id: id foreign
+    relationships:
+      belongsTo: User, Product
+
+  Notification:
+    user_id: id foreign
+    order_id: id foreign nullable
+    message: text
+    type: string:50
+    is_read: boolean default:false
+    relationships:
+      belongsTo: User, Order
