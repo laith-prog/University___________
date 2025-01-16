@@ -12,6 +12,33 @@ class CartController extends Controller
     /**
      * Add an item to the cart.
      */
+
+
+     public function getCart(Request $request)
+{
+    // Get the authenticated user
+    $user = Auth::user();
+
+    // Check if the user is authenticated
+    if (!$user) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    // Get the user's cart with the associated cart items and product details
+    $cart = Cart::with('Items.product')->where('user_id', $user->id)->first();
+
+    // If the cart doesn't exist, return a 404 response
+    if (!$cart) {
+        return response()->json(['message' => 'Cart not found'], 404);
+    }
+
+    // Return the cart with its items
+    return response()->json([
+        'cart' => $cart,  // cart object will include 'cartItems' and related 'product'
+    ]);
+}
+
+
     public function addToCart(Request $request)
 {
     // Validate the request
@@ -109,5 +136,64 @@ class CartController extends Controller
 
     return response()->json(['message' => 'Cart item updated successfully']);
 }
+public function cancelCart(Request $request)
+{
+    // Get the authenticated user
+    $user = Auth::user();
+
+    // Check if the user is authenticated
+    if (!$user) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    // Retrieve the user's cart
+    $cart = Cart::where('user_id', $user->id)->first();
+
+    // If the cart doesn't exist, return a 404 response
+    if (!$cart) {
+        return response()->json(['message' => 'Cart not found'], 404);
+    }
+
+    // Retrieve all the cart items
+    $cartItems = CartItem::where('cart_id', $cart->id)->get();
+
+    // Check if there are cart items to cancel
+    if ($cartItems->isEmpty()) {
+        return response()->json(['message' => 'No items in the cart to cancel'], 404);
+    }
+
+    // Prepare an array to hold the details of canceled products
+    $canceledProducts = [];
+
+    // Loop through each cart item and restore the product quantity
+    foreach ($cartItems as $cartItem) {
+        $product = Product::find($cartItem->product_id);
+
+        if ($product) {
+            // Restore the product quantity to stock
+            $product->quantity += $cartItem->quantity;
+            $product->save();
+
+            // Add product details to the canceled products array
+            $canceledProducts[] = [
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'canceled_quantity' => $cartItem->quantity,
+                'remaining_stock' => $product->quantity
+            ];
+        }
+    }
+
+    // Delete all cart items
+    CartItem::where('cart_id', $cart->id)->delete();
+
+    // Return success message with the canceled products details
+    return response()->json([
+        'message' => 'Cart canceled and items removed successfully',
+        'canceled_products' => $canceledProducts
+    ]);
+}
+
+
 
 }

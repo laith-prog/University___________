@@ -26,8 +26,8 @@ class ProductController extends Controller
     }
     public function show($id)
     {
-        // Find the product by ID
-        $product = Product::find($id);
+        // Find the product by ID with its associated store
+        $product = Product::with('store')->find($id);
     
         // If the product is not found, return a 404 response
         if (!$product) {
@@ -38,9 +38,10 @@ class ProductController extends Controller
         $product->Trending += 1;
         $product->save();
     
-        // Return the product as a JSON response
+        // Return the product with the associated store as a JSON response
         return response()->json($product);
     }
+    
     
 
     public function getProductsByCategory(Request $request)

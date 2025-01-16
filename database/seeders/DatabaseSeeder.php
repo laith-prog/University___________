@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
         
         Store::factory()
-            ->hasProducts(5) // Each store will have 5 products
+            ->hasProducts(30) // Each store will have 5 products
             ->count(30) // Create 10 stores
             ->create();
 

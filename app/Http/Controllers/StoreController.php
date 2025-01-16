@@ -30,16 +30,27 @@ class StoreController extends Controller
 
     public function show($id)
     {
-        $store = Store::with('products')->find($id);
-
+        // Get the store
+        $store = Store::find($id);
+    
         if (!$store) {
             return response()->json(['message' => 'Store not found'], 404);
         }
+    
+        // Increment the Trending count
         $store->Trending += 1;
         $store->save();
-
-        return response()->json($store);
+    
+        // Get the paginated products for the store
+        $products = $store->products()->paginate(10);  // Adjust the number of products per page here
+    
+        // Return the store and paginated products
+        return response()->json([
+            'store' => $store,
+            'products' => $products
+        ]);
     }
+    
     public function getTrendingStores()
     {
         // Fetch products with pagination (10 products per page)
