@@ -15,29 +15,36 @@ class CartController extends Controller
 
 
      public function getCart(Request $request)
-{
-    // Get the authenticated user
-    $user = Auth::user();
-
-    // Check if the user is authenticated
-    if (!$user) {
-        return response()->json(['message' => 'Unauthorized'], 401);
-    }
-
-    // Get the user's cart with the associated cart items and product details
-    $cart = Cart::with('Items.product')->where('user_id', $user->id)->first();
-
-    // If the cart doesn't exist, return a 404 response
-    if (!$cart) {
-        return response()->json(['message' => 'Cart not found'], 404);
-    }
-
-    // Return the cart with its items
-    return response()->json([
-        'cart' => $cart,  // cart object will include 'cartItems' and related 'product'
-    ]);
-}
-
+     {
+         // Get the authenticated user
+         $user = Auth::user();
+     
+         // Check if the user is authenticated
+         if (!$user) {
+             return response()->json(['message' => 'Unauthorized'], 401);
+         }
+     
+         // Get the user's cart with the associated cart items and product details
+         $cart = Cart::with('Items.product')->where('user_id', $user->id)->first();
+     
+         // If the cart doesn't exist, return a 404 response
+         if (!$cart) {
+             return response()->json(['message' => 'Cart not found'], 404);
+         }
+     
+         // Calculate the total price of the cart
+         $totalPrice = 0;
+         foreach ($cart->Items as $cartItem) {
+             $totalPrice += $cartItem->quantity * $cartItem->product->price;
+         }
+     
+         // Return the cart with its items and total price
+         return response()->json([
+             'cart' => $cart,  // cart object will include 'cartItems' and related 'product'
+             'total' => number_format($totalPrice, 2)  // total price formatted to 2 decimal places
+         ]);
+     }
+     
 
     public function addToCart(Request $request)
 {
@@ -193,6 +200,61 @@ public function cancelCart(Request $request)
         'canceled_products' => $canceledProducts
     ]);
 }
+public function deleteCartItem(Request $request)
+{
+    // Validate the input data
+    $validated = $request->validate([
+        'cart_item_id' => 'required|exists:cart_items,id',
+    ]);
+
+    // Get the authenticated user
+    $user = Auth::user();
+
+    // Check if the user is authenticated
+    if (!$user) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    // Retrieve the user's cart
+    $cart = Cart::where('user_id', $user->id)->first();
+
+    // If the cart doesn't exist, return a 404 response
+    if (!$cart) {
+        return response()->json(['message' => 'Cart not found'], 404);
+    }
+
+    // Retrieve the cart item
+    $cartItem = CartItem::where('id', $request->cart_item_id)
+        ->where('cart_id', $cart->id)
+        ->first();
+
+    // If the cart item doesn't exist or doesn't belong to the user, return an error
+    if (!$cartItem) {
+        return response()->json(['message' => 'Cart item not found or does not belong to this user'], 404);
+    }
+
+    // Get the product associated with the cart item
+    $product = Product::find($cartItem->product_id);
+
+    // Restore the quantity of the product
+    if ($product) {
+        $product->quantity += $cartItem->quantity;
+        $product->save();
+    }
+
+    // Delete the cart item
+    $cartItem->delete();
+
+    // Return a success response with the canceled product details
+    return response()->json([
+        'message' => 'Cart item deleted successfully',
+        'product_id' => $product->id,
+        'product_name' => $product->name,
+        'canceled_quantity' => $cartItem->quantity,
+        'remaining_stock' => $product->quantity
+    ]);
+}
+
 
 
 

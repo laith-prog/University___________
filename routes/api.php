@@ -44,6 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::get('/cart', [CartController::class, 'getCart']);
+    Route::delete('/cart/item/delete', [CartController::class, 'deleteCartItem']);
     Route::post('/cart/add', [CartController::class, 'addToCart']);
     Route::put('/cart/edit', [CartController::class, 'editCartItem']);
     Route::delete('/cart/cancel', [CartController::class, 'cancelCart']);
@@ -58,8 +59,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
-    Route::post('favorites', [FavoriteController::class, 'addToFavorites']);
-    Route::delete('favorites/{productId}', [FavoriteController::class, 'removeFromFavorites']);
+    Route::post('favorites/add', [FavoriteController::class, 'addToFavorites']);
+    Route::delete('favorites/remove/{productId}', [FavoriteController::class, 'removeFromFavorites']);
     Route::get('favorites', [FavoriteController::class, 'getFavorites']);
 
 
