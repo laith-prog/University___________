@@ -182,7 +182,7 @@ public function sendOTP(Request $request)
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
             'location' => 'required|string|max:100',
-            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4048', // Max 2MB
         ]);
     
         if ($validator->fails()) {

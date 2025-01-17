@@ -16,7 +16,9 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
-            $table->decimal('total_amount', 10, 2);
+            $table->decimal('total_amount', 10, places: 2);
+            $table->string('payment_method')->nullable(); // e.g., 'credit_card', 'paypal', etc.
+            $table->string('transaction_id')->nullable(); // e.g., payment gateway transaction ID
             $table->enum('status', ["pending","accepted","delivering","delivered","cancelled"])->default('pending');
             $table->text('delivery_location');
             $table->timestamps();

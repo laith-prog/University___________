@@ -22,8 +22,10 @@ class Order extends Model
         'total_amount',
         'status',
         'delivery_location',
-        'payment_info',
+        'payment_method',
+        'transaction_id',
     ];
+    
 
     /**
      * The attributes that should be cast to native types.

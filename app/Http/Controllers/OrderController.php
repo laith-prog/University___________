@@ -17,6 +17,11 @@ class OrderController extends Controller
      */
     public function createOrder(Request $request)
 {
+
+    $validated = $request->validate([
+        'payment_method' => 'required|string', // E.g., 'credit_card', 'paypal', etc.
+        'transaction_id' => 'nullable|string', // Optional transaction ID
+    ]);
     // Validate only delivery_location as it will be fetched from User model
     $user = Auth::user();
 
@@ -63,6 +68,8 @@ class OrderController extends Controller
         'total_amount' => $totalAmount,
         'status' => 'pending',
         'delivery_location' => $deliveryLocation,
+        'payment_method'=>$request->payment_method,
+        'transaction_id'=>$request->transaction_id
     ]);
 
     foreach ($cartItems as $cartItem) {
@@ -82,7 +89,6 @@ class OrderController extends Controller
 
     // Clear the cart
     CartItem::where('cart_id', $cart->id)->delete();
-    $cart->delete();
 
     return response()->json(['message' => 'Order created successfully', 'order' => $order]);
 }
