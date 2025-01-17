@@ -131,6 +131,7 @@ class OrderController extends Controller
     public function editOrder(Request $request, $orderId)
     {
         $validated = $request->validate([
+            'delivery_location'=>'nullable|string',
             'order_items' => 'required|array',
             'order_items.*.product_id' => 'required|exists:products,id',
             'order_items.*.quantity' => 'required|integer|min:1',
@@ -196,7 +197,7 @@ class OrderController extends Controller
         }
 
         // Update order status to canceled
-        $order->status = 'canceled';
+        $order->status = 'cancelled';
         $order->save();
 
         return response()->json(['message' => 'Order canceled successfully']);

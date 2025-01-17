@@ -9,8 +9,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Model
+class User extends Authenticatable
 {
     use HasFactory, SoftDeletes,HasApiTokens, Notifiable;
 
@@ -26,6 +27,8 @@ class User extends Model
         'profile_image',
         'location',
         'role',
+        'password',
+
     ];
 
     /**
@@ -35,6 +38,8 @@ class User extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'password' => 'hashed',
+
     ];
 
     public function orders(): HasMany

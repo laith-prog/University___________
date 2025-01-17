@@ -20,7 +20,19 @@ return new class extends Migration
             $table->text('location')->nullable();
             $table->enum('role', ["user","admin"])->default('user');
             $table->timestamps();
+            $table->string('password')->nullable();
+
             $table->softDeletes();
+        });
+        Schema::create('sessions', function (Blueprint $table) {
+            $table->string('id');
+            $table->foreignId('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
+            $table->softDeletes();
+
         });
     }
 
@@ -30,5 +42,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
+
     }
 };
