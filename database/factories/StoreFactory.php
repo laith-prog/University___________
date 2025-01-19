@@ -26,6 +26,8 @@ class StoreFactory extends Factory
             'location' => $this->faker->text(),
             'description' => $this->faker->text(),
             'status' => $this->faker->boolean(),
+            'image' => $this->faker->regexify('[A-Za-z0-9]{255}'),
+
             'category' => $this->faker->randomElement(["clothing","electronics","grocery","restaurant","beauty","furniture"]),
         ];
     }

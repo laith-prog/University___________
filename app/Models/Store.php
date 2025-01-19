@@ -22,6 +22,8 @@ class Store extends Model
         'description',
         'status',
         'category',
+        'image',
+
     ];
 
     /**

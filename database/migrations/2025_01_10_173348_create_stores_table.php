@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('location')->nullable();
             $table->text('description')->nullable();
             $table->boolean('status')->default(true);
+            $table->string('image', length: 255)->nullable();
             $table->enum('category', ["clothing","electronics","grocery","restaurant","beauty","furniture"]);
             $table->timestamps();
             $table->softDeletes();

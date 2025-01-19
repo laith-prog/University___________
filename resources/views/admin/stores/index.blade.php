@@ -21,6 +21,7 @@
         <table class="min-w-full table-auto">
             <thead>
                 <tr class="bg-gray-100">
+                    <th class="px-4 py-2 text-left">Image</th>
                     <th class="px-4 py-2 text-left">Name</th>
                     <th class="px-4 py-2 text-left">Category</th>
                     <th class="px-4 py-2 text-left">Location</th>
@@ -32,6 +33,15 @@
             <tbody>
                 @foreach($stores as $store)
                 <tr>
+                    <td class="border px-4 py-2">
+                        @if($store->image)
+                            <img src="{{ asset('storage/' . $store->image) }}" alt="{{ $store->name }}" class="w-16 h-16 object-cover">
+                        @else
+                            <div class="w-16 h-16 bg-gray-200 flex items-center justify-center">
+                                <span class="text-gray-500">No image</span>
+                            </div>
+                        @endif
+                    </td>
                     <td class="border px-4 py-2">{{ $store->name }}</td>
                     <td class="border px-4 py-2">{{ ucfirst($store->category) }}</td>
                     <td class="border px-4 py-2">{{ $store->location }}</td>

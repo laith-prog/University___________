@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('quantity');
             $table->integer('Trending')->default(0);
             $table->integer('best_Selling')->default(0);
-            $table->string('image', 255)->nullable();
+            $table->string('image', length: 255)->nullable();
             $table->enum('category', ["clothes","electronics","food","cosmetics","furniture","accessories"]);
             $table->timestamps();
             $table->softDeletes();

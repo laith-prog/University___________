@@ -26,7 +26,12 @@ class StoreController extends Controller
             'location' => 'nullable',
             'description' => 'nullable',
             'category' => 'required|in:clothing,electronics,grocery,restaurant,beauty,furniture',
+            'image' => 'nullable|image|max:2048'
+
         ]);
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('stores', 'public');
+        }
 
         Store::create($validated);
 
@@ -44,8 +49,14 @@ public function update(Request $request, Store $store)
         'location' => 'nullable',
         'description' => 'nullable',
         'category' => 'required|in:clothing,electronics,grocery,restaurant,beauty,furniture',
-        'status' => 'boolean'
+        'status' => 'boolean',
+        'image' => 'nullable|image|max:2048'
+
     ]);
+    if ($request->hasFile('image')) {
+        $validated['image'] = $request->file('image')->store('stores', 'public');
+    }
+
 
     $store->update($validated);
 
